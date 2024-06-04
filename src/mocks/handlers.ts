@@ -3,7 +3,7 @@ import random from '../lib/random'
 import type { LoginResponse, LoginVariables } from '../types';
 
 // Mock Data
-const loginResponse: LoginResponse = {
+export const loginResponse: LoginResponse = {
     "id": 1,
     "username": "emilys",
     "email": "emily.johnson@x.dummyjson.com",
