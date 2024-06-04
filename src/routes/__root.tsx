@@ -6,7 +6,6 @@ import {
 } from '@tanstack/react-router'
 import { QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { Auth } from '../utils/auth'
 import { Spinner } from '../components/Spinner'
 
 function RouterSpinner() {
@@ -15,7 +14,6 @@ function RouterSpinner() {
 }
 
 export const Route = createRootRouteWithContext<{
-    auth: Auth
     queryClient: QueryClient
 }>()({
     component: RootComponent,
@@ -24,15 +22,15 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
     return (
         <>
-            <div className="min-h-screen flex flex-col">
-                <div className="flex items-center border-b gap-2">
-                    <h1 className="text-3xl p-2">Todo App</h1>
+            <div className="flex flex-col min-h-screen">
+                <div className="flex items-center gap-2 border-b">
+                    <h1 className="p-2 text-3xl">Todo App</h1>
                     <div className="text-3xl">
                         <RouterSpinner />
                     </div>
                 </div>
-                <div className="flex-1 flex">
-                    <div className="divide-y w-56">
+                <div className="flex flex-1">
+                    <div className="w-56 divide-y">
                         {(
                             [
                                 ['/', '홈'],
@@ -52,7 +50,7 @@ function RootComponent() {
                                             }
                                         }
                                         preload="intent"
-                                        className="block py-2 px-3 text-blue-700"
+                                        className="block px-3 py-2 text-blue-700"
                                         // Make "active" links bold
                                         activeProps={{ className: `font-bold` }}
                                     >

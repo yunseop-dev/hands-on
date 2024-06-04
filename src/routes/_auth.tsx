@@ -1,12 +1,12 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { auth } from '../utils/auth'
 
 export const Route = createFileRoute('/_auth')({
     // Before loading, authenticate the user via our auth context
     // This will also happen during prefetching (e.g. hovering over links, etc)
-    beforeLoad: ({ context, location }) => {
+    beforeLoad: ({ location }) => {
         // If the user is logged out, redirect them to the login page
-        if (context.auth.status === 'loggedOut') {
+        const token = localStorage.getItem('token');
+        if (!token) {
             throw redirect({
                 to: '/login',
                 search: {
@@ -16,11 +16,6 @@ export const Route = createFileRoute('/_auth')({
                     redirect: location.href,
                 },
             })
-        }
-
-        // Otherwise, return the user in context
-        return {
-            username: auth.username,
         }
     },
 })

@@ -1,78 +1,41 @@
 import { http, delay, HttpResponse, type JsonBodyType } from 'msw'
 import random from '../lib/random'
-import { UserResponse } from '../types';
+import type { LoginResponse, LoginVariables } from '../types';
 
 // Mock Data
-export const user: UserResponse = {
+const loginResponse: LoginResponse = {
     "id": 1,
+    "username": "emilys",
+    "email": "emily.johnson@x.dummyjson.com",
     "firstName": "Emily",
     "lastName": "Johnson",
-    "maidenName": "Smith",
-    "age": 28,
     "gender": "female",
-    "email": "emily.johnson@x.dummyjson.com",
-    "phone": "+81 965-431-3024",
-    "username": "emilys",
-    "password": "emilyspass",
-    "birthDate": "1996-5-30",
     "image": "https://dummyjson.com/icon/emilys/128",
-    "bloodGroup": "O-",
-    "height": 193.24,
-    "weight": 63.16,
-    "eyeColor": "Green",
-    "hair": {
-        "color": "Brown",
-        "type": "Curly"
-    },
-    "ip": "42.48.100.32",
-    "address": {
-        "address": "626 Main Street",
-        "city": "Phoenix",
-        "state": "Mississippi",
-        "stateCode": "MS",
-        "postalCode": "29112",
-        "coordinates": {
-            "lat": -77.16213,
-            "lng": -92.084824
-        },
-        "country": "United States"
-    },
-    "macAddress": "47:fa:41:18:ec:eb",
-    "university": "University of Wisconsin--Madison",
-    "bank": {
-        "cardExpire": "03/26",
-        "cardNumber": "9289760655481815",
-        "cardType": "Elo",
-        "currency": "CNY",
-        "iban": "YPUXISOBI7TTHPK2BR3HAIXL"
-    },
-    "company": {
-        "department": "Engineering",
-        "name": "Dooley, Kozey and Cronin",
-        "title": "Sales Manager",
-        "address": {
-            "address": "263 Tenth Street",
-            "city": "San Francisco",
-            "state": "Wisconsin",
-            "stateCode": "WI",
-            "postalCode": "37657",
-            "coordinates": {
-                "lat": 71.814525,
-                "lng": -161.150263
-            },
-            "country": "United States"
-        }
-    },
-    "ein": "977-175",
-    "ssn": "900-590-289",
-    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36",
-    "crypto": {
-        "coin": "Bitcoin",
-        "wallet": "0xb9fc2fe63b2a6c003f1c324c3bfa53259162181a",
-        "network": "Ethereum (ERC20)"
-    },
-    "role": "admin"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUsInVzZXJuYW1lIjoia21pbmNoZWxsZSIsImVtYWlsIjoia21pbmNoZWxsZUBxcS5jb20iLCJmaXJzdE5hbWUiOiJKZWFubmUiLCJsYXN0TmFtZSI6IkhhbHZvcnNvbiIsImdlbmRlciI6ImZlbWFsZSIsImltYWdlIjoiaHR0cHM6Ly9yb2JvaGFzaC5vcmcvSmVhbm5lLnBuZz9zZXQ9c2V0NCIsImlhdCI6MTcxMTIwOTAwMSwiZXhwIjoxNzExMjEyNjAxfQ.F_ZCpi2qdv97grmWiT3h7HcT1prRJasQXjUR4Nk1yo8"
 }
+
+const login: Parameters<typeof http.post>[1] = async (info) => {
+    const body = await info.request.json() as LoginVariables
+    const invaildError = HttpResponse.json({
+        message: 'invalid value',
+    }, {
+        status: 400,
+    })
+
+    if (body == null) {
+        await delay(300)
+        return invaildError;
+    }
+    return randomResponseNotifier(
+        [
+            { response: loginResponse, status: 200 }
+        ],
+        [
+            // { response: { message: 'server error' }, status: 500 }
+        ]
+    )
+};
+
 
 const randomResponseNotifier = async <
     T extends JsonBodyType,
@@ -102,17 +65,7 @@ const randomResponseNotifier = async <
     return responseList[randomNumber]
 }
 
-const getUser: Parameters<typeof http.get>[1] = () => {
-    return randomResponseNotifier(
-        [
-            { response: user, status: 200 }
-        ],
-        [
-            { response: { code: 'FOO', message: 'server error' }, status: 500 }
-        ]
-    )
-};
 
 export const handlers = [
-    http.get('/user/me', getUser),
+    http.post('/auth/login', login),
 ]
