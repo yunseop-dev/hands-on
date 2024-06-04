@@ -1,12 +1,8 @@
 import mem from 'memoize';
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { LoginResponse } from '../types';
 
-type RefreshTokenResponse = {
-    status: boolean;
-    accessToken: string;
-    refreshToken: string;
-    exp: number;
-}
+
 // const baseURL = ''
 const baseURL = import.meta.env.MODE === 'test' ? '' : import.meta.env.VITE_BACKEND_SERVER_URL;
 const REFRESH_URL = '/auth/refresh'
@@ -29,8 +25,6 @@ http.interceptors.request.use((config) => {
     let token: string | null = null;
 
     if (config.url === REFRESH_URL) {
-        token = localStorage.getItem('refresh-token');
-    } else {
         token = localStorage.getItem('token');
     }
 
@@ -43,18 +37,13 @@ http.interceptors.request.use((config) => {
 
 const getRefreshToken = mem(async (): Promise<string | void> => {
     try {
-        const result = await http.post<void, RefreshTokenResponse>(REFRESH_URL);
-        const { accessToken, refreshToken } = result;
-        localStorage.setItem('token', accessToken);
+        const result = await http.post<void, LoginResponse>(REFRESH_URL);
+        const { token } = result;
+        localStorage.setItem('token', token);
 
-        if (refreshToken !== null) {
-            localStorage.setItem('refresh-token', refreshToken);
-        }
-
-        return accessToken;
+        return token;
     } catch (e) {
         localStorage.removeItem('token');
-        localStorage.removeItem('refresh-token');
     }
 }, { maxAge: 1000 })
 

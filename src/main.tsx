@@ -5,7 +5,6 @@ import {
   ErrorComponent,
   createRouter,
 } from '@tanstack/react-router'
-import { auth } from './utils/auth'
 import { Spinner } from './components/Spinner'
 import { routeTree } from './routeTree.gen'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -34,7 +33,6 @@ const router = createRouter({
   ),
   defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
   context: {
-    auth: undefined!, // We'll inject this when we render
     queryClient,
   },
   defaultPreload: 'intent',
@@ -56,9 +54,6 @@ function App() {
       <RouterProvider
         router={router}
         defaultPreload="intent"
-        context={{
-          auth,
-        }}
       />
     </>
   )
