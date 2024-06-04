@@ -1,10 +1,9 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useRouter, useLayoutEffect } from '@tanstack/react-router'
 import { z } from 'zod'
 import { useForm, SubmitHandler } from "react-hook-form"
 import useLoginMutation from '../hooks/mutations/loginMutation'
 import { LoginVariables } from '../types'
 import useLocalStorage from '../hooks/useLocalStorage'
-import { useLayoutEffect } from 'react'
 
 export const Route = createFileRoute('/login')({
     validateSearch: z.object({
@@ -13,17 +12,18 @@ export const Route = createFileRoute('/login')({
     component: LoginComponent,
 })
 
-function LoginComponent() {
+export default function LoginComponent() {
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<LoginVariables>({
         defaultValues: {
-            username: 'emilys',
-            password: 'emilyspass'
+            // username: 'emilys',
+            // password: 'emilyspass'
         }
     })
+    const navigate = useNavigate();
     const [token, setToken] = useLocalStorage('token', '')
     const loginMutation = useLoginMutation()
     const onSubmit: SubmitHandler<LoginVariables> = (data) => {
@@ -39,10 +39,12 @@ function LoginComponent() {
     const search = Route.useSearch()
 
     useLayoutEffect(() => {
-        if (token && search.redirect) {
-            router.history.push(search.redirect)
+        if (token) {
+            navigate({
+                to: search.redirect ?? '/'
+            })
         }
-    }, [search.redirect, token])
+    }, [search.redirect, navigate, token])
 
     return token ? (
         <div>
@@ -65,14 +67,14 @@ function LoginComponent() {
             <div className="h-2" />
             <form onSubmit={handleSubmit(onSubmit)}>
                 <label>username</label>
-                <input type="text" className='block border' defaultValue="test" {...register("username")} />
+                <input data-testid="email-input" type="text" className='block border' defaultValue="test" {...register("username")} />
                 {errors.password && <span className='block text-red-500'>This field is required</span>}
 
                 <label>password</label>
-                <input type="password" className='block border' {...register("password", { required: true })} />
+                <input data-testid="password-input" type="password" className='block border' {...register("password", { required: true })} />
                 {errors.password && <span className='block text-red-500'>This field is required</span>}
 
-                <button type="submit">submit</button>
+                <button data-testid="login-button" type="submit">submit</button>
             </form>
         </div>
     )

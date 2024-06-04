@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
-
+import path from 'path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
@@ -14,7 +14,15 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/setup.ts'],
+    setupFiles: [
+      './src/setup.ts',
+      'vitest-localstorage-mock'
+    ],
     pool: 'forks',
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
 })
